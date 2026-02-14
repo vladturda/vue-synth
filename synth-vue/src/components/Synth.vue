@@ -61,6 +61,7 @@
     <PianoRoll 
       v-if="showPianoRoll"
       v-model="sequencerNotes"
+      ref="pianoRollRef"
       @play-note="playSequencerNote"
       @stop-note="stopSequencerNote"
     />
@@ -75,6 +76,7 @@ import Keyboard from './Keyboard.vue'
 import PianoRoll from './PianoRoll.vue'
 
 const showPianoRoll = ref(false)
+const pianoRollRef = ref(null)
 
 const waveforms = ['sine', 'square', 'sawtooth', 'triangle']
 const waveLabels = {
@@ -159,6 +161,10 @@ function playNote(note) {
   
   activeOscillators.set(note, { osc, gainNode })
   activeNotes[note] = true
+  
+  if (pianoRollRef.value) {
+    pianoRollRef.value.recordNote(note)
+  }
 }
 
 function stopNote(note) {

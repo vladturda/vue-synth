@@ -5,6 +5,14 @@
         <button class="roll-btn" @click="togglePlay">
           {{ isPlaying ? 'Stop' : 'Play' }}
         </button>
+        <button 
+          class="roll-btn record-btn" 
+          :class="{ recording: isRecording }"
+          @click="toggleRecord"
+          :disabled="!isPlaying"
+        >
+          {{ isRecording ? 'Recording' : 'Record' }}
+        </button>
         <button class="roll-btn" @click="clearNotes">Clear</button>
         <div class="tempo-control">
           <label>Tempo:</label>
@@ -79,13 +87,18 @@ const props = defineProps({
   modelValue: {
     type: Array,
     default: () => []
+  },
+  recordEnabled: {
+    type: Boolean,
+    default: false
   }
 })
 
-const emit = defineEmits(['update:modelValue', 'playNote', 'stopNote'])
+const emit = defineEmits(['update:modelValue', 'playNote', 'stopNote', 'noteTriggered'])
 
 const tempo = ref(120)
 const isPlaying = ref(false)
+const isRecording = ref(false)
 const currentBeat = ref(0)
 const gridRef = ref(null)
 const noteRowsRef = ref(null)
@@ -146,6 +159,29 @@ function removeNote(note) {
     notes.value.splice(index, 1)
     emit('update:modelValue', notes.value)
   }
+}
+
+function recordNote(note) {
+  if (!isRecording.value || !isPlaying.value) return
+  
+  const beat = currentBeat.value
+  const existing = notes.value.find(n => n.note === note && 
+    beat >= n.start && beat < n.start + n.duration)
+  
+  if (!existing) {
+    notes.value.push({
+      id: noteId++,
+      note,
+      start: beat,
+      duration: 1,
+      playing: false
+    })
+    emit('update:modelValue', notes.value)
+  }
+}
+
+function toggleRecord() {
+  isRecording.value = !isRecording.value
 }
 
 function clearNotes() {
@@ -240,6 +276,14 @@ onUnmounted(() => {
 watch(() => props.modelValue, (newVal) => {
   notes.value = [...newVal]
 }, { deep: true })
+
+watch(() => props.recordEnabled, (newVal) => {
+  isRecording.value = newVal
+})
+
+defineExpose({
+  recordNote
+})
 </script>
 
 <style scoped>
@@ -272,6 +316,29 @@ watch(() => props.modelValue, (newVal) => {
 
 .roll-btn:hover {
   background: #00b8d9;
+}
+
+.roll-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.roll-btn.record-btn {
+  background: #ff006e;
+}
+
+.roll-btn.record-btn:hover:not(:disabled) {
+  background: #ff4d94;
+}
+
+.roll-btn.record-btn.recording {
+  background: #ff0044;
+  animation: pulse 1s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
 }
 
 .tempo-control {
