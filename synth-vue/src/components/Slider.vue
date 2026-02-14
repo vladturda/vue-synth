@@ -1,0 +1,101 @@
+<template>
+  <div class="slider-container">
+    <input 
+      type="range" 
+      class="slider" 
+      :min="min" 
+      :max="max" 
+      :step="step"
+      :value="modelValue"
+      @input="$emit('update:modelValue', parseFloat($event.target.value))"
+    >
+    <span class="slider-value">{{ displayValue }}</span>
+  </div>
+</template>
+
+<script setup>
+import { computed } from 'vue'
+
+const props = defineProps({
+  modelValue: {
+    type: Number,
+    required: true
+  },
+  min: {
+    type: Number,
+    default: 0
+  },
+  max: {
+    type: Number,
+    default: 1
+  },
+  step: {
+    type: Number,
+    default: 0.01
+  },
+  format: {
+    type: String,
+    default: ''
+  }
+})
+
+defineEmits(['update:modelValue'])
+
+const displayValue = computed(() => {
+  if (props.format === 'percent') {
+    return Math.round(props.modelValue * 100) + '%'
+  }
+  if (props.format === 's') {
+    return props.modelValue.toFixed(2) + 's'
+  }
+  return props.modelValue
+})
+</script>
+
+<style scoped>
+.slider-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+.slider {
+  -webkit-appearance: none;
+  width: 120px;
+  height: 8px;
+  border-radius: 4px;
+  background: linear-gradient(90deg, #1a1a2e, #2a2a4a);
+  outline: none;
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: linear-gradient(145deg, #3a3a5a, #2a2a4a);
+  cursor: pointer;
+  box-shadow: 
+    0 3px 10px rgba(0, 0, 0, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  border: 2px solid #00d9ff;
+}
+
+.slider::-moz-range-thumb {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: linear-gradient(145deg, #3a3a5a, #2a2a4a);
+  cursor: pointer;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.4);
+  border: 2px solid #00d9ff;
+}
+
+.slider-value {
+  font-size: 14px;
+  font-weight: bold;
+  color: #00d9ff;
+}
+</style>
