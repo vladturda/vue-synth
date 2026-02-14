@@ -161,10 +161,6 @@ function playNote(note) {
   
   activeOscillators.set(note, { osc, gainNode })
   activeNotes[note] = true
-  
-  if (pianoRollRef.value) {
-    pianoRollRef.value.recordNote(note)
-  }
 }
 
 function stopNote(note) {
@@ -191,6 +187,9 @@ function handleKeyDown(e) {
   const note = keyMap[e.key.toLowerCase()]
   if (note && !activeOscillators.has(note)) {
     playNote(note)
+    if (pianoRollRef.value) {
+      pianoRollRef.value.startNoteRecording(note, true)
+    }
   }
 }
 
@@ -198,6 +197,9 @@ function handleKeyUp(e) {
   const note = keyMap[e.key.toLowerCase()]
   if (note) {
     stopNote(note)
+    if (pianoRollRef.value) {
+      pianoRollRef.value.stopNoteRecording(note, true)
+    }
   }
 }
 
