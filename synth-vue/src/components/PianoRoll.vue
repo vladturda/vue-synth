@@ -168,7 +168,7 @@ function addNote(note, beat) {
       id: noteId++,
       note,
       start: beat,
-      duration: 1,
+      duration: 0.12,
       playing: false
     })
     emit('update:modelValue', notes.value)
