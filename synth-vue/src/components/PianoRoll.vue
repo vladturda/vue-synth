@@ -70,14 +70,15 @@
               <div 
                 v-for="n in getNotesForRow(note)" 
                 :key="n.id"
-                class="note"
-                :class="{ 'is-playing': n.playing }"
-                :style="{ 
-                  left: (n.start / totalBeats * 100) + '%',
-                  width: (n.duration / totalBeats * 100) + '%'
-                }"
-                @mousedown.stop="removeNote(n)"
-              ></div>
+              >
+                <PianoRollNote 
+                  :start="n.start"
+                  :duration="n.duration"
+                  :playing="n.playing"
+                  :total-beats="totalBeats"
+                  @remove="removeNote(n)"
+                />
+              </div>
             </div>
           </div>
         </div>
@@ -88,6 +89,7 @@
 
 <script setup>
 import { ref, computed, onUnmounted, watch } from 'vue'
+import PianoRollNote from './PianoRollNote.vue'
 
 const props = defineProps({
   modelValue: {
@@ -524,24 +526,5 @@ defineExpose({
 
 .note-row.is-black {
   background: #151525;
-}
-
-.note {
-  position: absolute;
-  top: 10%;
-  height: 80%;
-  background: #00d9ff;
-  border-radius: 2px;
-  cursor: pointer;
-  transition: background 0.1s;
-}
-
-.note:hover {
-  background: #ff006e;
-}
-
-.note.is-playing {
-  background: #00ff88;
-  box-shadow: 0 0 5px #00ff88;
 }
 </style>
