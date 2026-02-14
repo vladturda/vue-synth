@@ -42,20 +42,11 @@
       </div>
     </div>
 
-    <div class="keyboard">
-      <div
-        v-for="key in keyboardNotes"
-        :key="key.note"
-        class="key"
-        :class="[key.type, { active: activeNotes.has(key.note) }]"
-        :style="{ left: getKeyPosition(key) + 'px' }"
-        @mousedown="playNote(key.note)"
-        @mouseup="stopNote(key.note)"
-        @mouseleave="stopNote(key.note)"
-      >
-        <span class="key-label">{{ key.note.slice(0, -1) }}</span>
-      </div>
-    </div>
+    <Keyboard 
+      :active-notes="activeNotes"
+      @play="playNote"
+      @stop="stopNote"
+    />
   </div>
 </template>
 
@@ -63,6 +54,7 @@
 import { reactive, onMounted, onUnmounted } from 'vue'
 import Knob from './Knob.vue'
 import Slider from './Slider.vue'
+import Keyboard from './Keyboard.vue'
 
 const waveforms = ['sine', 'square', 'sawtooth', 'triangle']
 const waveLabels = {
@@ -87,23 +79,6 @@ const noteFrequencies = {
   'G#': 415.30, 'A': 440.00, 'A#': 466.16, 'B': 493.88
 }
 
-const keyboardNotes = [
-  { note: 'C3', type: 'white' }, { note: 'C#3', type: 'black' },
-  { note: 'D3', type: 'white' }, { note: 'D#3', type: 'black' },
-  { note: 'E3', type: 'white' },
-  { note: 'F3', type: 'white' }, { note: 'F#3', type: 'black' },
-  { note: 'G3', type: 'white' }, { note: 'G#3', type: 'black' },
-  { note: 'A3', type: 'white' }, { note: 'A#3', type: 'black' },
-  { note: 'B3', type: 'white' },
-  { note: 'C4', type: 'white' }, { note: 'C#4', type: 'black' },
-  { note: 'D4', type: 'white' }, { note: 'D#4', type: 'black' },
-  { note: 'E4', type: 'white' },
-  { note: 'F4', type: 'white' }, { note: 'F#4', type: 'black' },
-  { note: 'G4', type: 'white' }, { note: 'G#4', type: 'black' },
-  { note: 'A4', type: 'white' }, { note: 'A#4', type: 'black' },
-  { note: 'B4', type: 'white' }
-]
-
 const activeNotes = new Set()
 let audioCtx = null
 let masterGain = null
@@ -114,21 +89,6 @@ const keyMap = {
   'f': 'F3', 't': 'F#3', 'g': 'G3', 'y': 'G#3', 'h': 'A3',
   'u': 'A#3', 'j': 'B3',
   'k': 'C4', 'o': 'C#4', 'l': 'D4', 'p': 'D#4', ';': 'E4'
-}
-
-const whiteKeyWidth = 52
-const blackKeyWidth = 35
-const offset = 50
-
-function getKeyPosition(key) {
-  const whiteKeysBefore = keyboardNotes.slice(0, keyboardNotes.indexOf(key))
-    .filter(k => k.type === 'white').length
-  
-  if (key.type === 'white') {
-    return whiteKeysBefore * whiteKeyWidth + offset
-  } else {
-    return whiteKeysBefore * whiteKeyWidth - blackKeyWidth / 2 + offset
-  }
 }
 
 function getFrequency(noteWithOctave) {
@@ -261,86 +221,6 @@ onUnmounted(() => {
   font-size: 14px;
   font-weight: bold;
   color: #00d9ff;
-}
-
-.keyboard {
-  display: block;
-  position: relative;
-  padding: 20px;
-  background: linear-gradient(180deg, #1a1a2e, #0f0f1e);
-  border-radius: 10px;
-  box-shadow: inset 0 5px 15px rgba(0, 0, 0, 0.5);
-  height: 240px;
-  width: 820px;
-}
-
-.key {
-  cursor: pointer;
-  position: absolute;
-  top: 20px;
-  transition: all 0.1s ease;
-}
-
-.key.white {
-  width: 50px;
-  height: 180px;
-  background: linear-gradient(180deg, #f5f5f5 0%, #e0e0e0 100%);
-  border: 1px solid #ccc;
-  border-radius: 0 0 5px 5px;
-  box-shadow: 
-    0 5px 15px rgba(0, 0, 0, 0.3),
-    inset 0 -5px 10px rgba(0, 0, 0, 0.1);
-}
-
-.key.white:hover {
-  background: linear-gradient(180deg, #ffffff 0%, #f0f0f0 100%);
-}
-
-.key.white:active, .key.white.active {
-  background: linear-gradient(180deg, #00d9ff 0%, #0099cc 100%);
-  transform: translateY(3px);
-  box-shadow: 
-    0 2px 10px rgba(0, 217, 255, 0.5),
-    inset 0 -2px 5px rgba(0, 0, 0, 0.2);
-}
-
-.key.black {
-  width: 35px;
-  height: 110px;
-  background: linear-gradient(180deg, #2a2a2a 0%, #1a1a1a 100%);
-  border: 1px solid #000;
-  z-index: 2;
-  box-shadow: 
-    0 5px 15px rgba(0, 0, 0, 0.5),
-    inset 0 -3px 5px rgba(0, 0, 0, 0.5);
-}
-
-.key.black:hover {
-  background: linear-gradient(180deg, #3a3a3a 0%, #2a2a2a 100%);
-}
-
-.key.black:active, .key.black.active {
-  background: linear-gradient(180deg, #ff006e 0%, #cc0058 100%);
-  transform: translateY(3px);
-  box-shadow: 
-    0 2px 10px rgba(255, 0, 110, 0.5),
-    inset 0 -2px 5px rgba(0, 0, 0, 0.3);
-}
-
-.key-label {
-  position: absolute;
-  bottom: 15px;
-  left: 50%;
-  transform: translateX(-50%);
-  font-size: 10px;
-  color: #666;
-  text-transform: uppercase;
-  pointer-events: none;
-}
-
-.key.black .key-label {
-  color: #666;
-  font-size: 9px;
 }
 
 .waveform-selector {
