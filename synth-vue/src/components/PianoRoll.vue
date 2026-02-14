@@ -27,14 +27,14 @@
       </div>
       
       <div class="roll-grid" ref="gridRef" @scroll="handleScroll">
-        <div class="grid-content" :style="{ width: gridWidth + 'px' }">
+        <div class="grid-content">
           <div class="beat-lines">
             <div 
               v-for="beat in totalBeats" 
               :key="beat"
               class="beat-line"
               :class="{ 'major': beat % 4 === 1 }"
-              :style="{ left: (beat - 1) * beatsPerBar * beatWidth + 'px' }"
+              :style="{ left: ((beat - 1) / totalBeats * 100) + '%' }"
             >
               <span class="beat-label">{{ beat }}</span>
             </div>
@@ -89,14 +89,23 @@ const displayNotes = [
   'B3', 'A#3', 'A3', 'G#3', 'G3', 'F#3', 'F3', 'E3', 'D#3', 'D3', 'C#3', 'C3'
 ]
 
-const totalBars = 4
+const totalBars = 2
 const beatsPerBar = 4
 const totalBeats = totalBars * beatsPerBar
 const beatWidth = 60
-const noteWidth = 30
-const gridWidth = totalBeats * beatWidth
+
+const noteHeight = computed(() => 100 / displayNotes.length)
 
 const notes = ref([...props.modelValue])
+
+const gridWidth = computed(() => {
+  if (gridRef.value) {
+    return gridRef.value.clientWidth
+  }
+  return totalBeats * beatWidth
+})
+
+const noteWidth = computed(() => gridWidth.value / totalBeats)
 
 let playTimeout = null
 let noteId = 0
@@ -203,9 +212,8 @@ function onGridClick(e) {
   const x = e.clientX - rect.left + scrollLeft
   const y = e.clientY - rect.top
   
-  const rowHeight = rect.height / displayNotes.length
-  const noteIndex = Math.floor(y / rowHeight)
-  const beat = Math.floor(x / noteWidth)
+  const noteIndex = Math.floor((y / rect.height) * displayNotes.length)
+  const beat = Math.floor((x / rect.width) * totalBeats)
   
   if (noteIndex >= 0 && noteIndex < displayNotes.length) {
     addNote(displayNotes[noteIndex], beat)
@@ -275,7 +283,7 @@ watch(() => props.modelValue, (newVal) => {
   background: #0f0f1e;
   border-radius: 5px;
   overflow: hidden;
-  height: 300px;
+  height: 450px;
 }
 
 .piano-keys {
@@ -283,15 +291,18 @@ watch(() => props.modelValue, (newVal) => {
   flex-shrink: 0;
   background: #1a1a2e;
   border-right: 1px solid #333;
+  display: flex;
+  flex-direction: column;
 }
 
 .piano-key-row {
-  height: 12.5px;
+  flex: 1;
   display: flex;
   align-items: center;
   padding-right: 5px;
   justify-content: flex-end;
   border-bottom: 1px solid #222;
+  min-height: 0;
 }
 
 .piano-key-row.is-black {
@@ -312,6 +323,7 @@ watch(() => props.modelValue, (newVal) => {
 .grid-content {
   position: relative;
   height: 100%;
+  width: 100%;
 }
 
 .beat-lines {
@@ -346,12 +358,15 @@ watch(() => props.modelValue, (newVal) => {
 .note-rows {
   position: relative;
   height: 100%;
+  display: flex;
+  flex-direction: column;
 }
 
 .note-row {
-  height: 12.5px;
+  flex: 1;
   border-bottom: 1px solid #1a1a2e;
   position: relative;
+  min-height: 0;
 }
 
 .note-row.is-black {
@@ -360,8 +375,8 @@ watch(() => props.modelValue, (newVal) => {
 
 .note {
   position: absolute;
-  top: 1px;
-  height: 10px;
+  top: 10%;
+  height: 80%;
   background: #00d9ff;
   border-radius: 2px;
   cursor: pointer;
