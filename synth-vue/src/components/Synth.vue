@@ -47,14 +47,21 @@
       @play="playNote"
       @stop="stopNote"
     />
+
+    <PianoRoll 
+      v-model="sequencerNotes"
+      @play-note="playSequencerNote"
+      @stop-note="stopSequencerNote"
+    />
   </div>
 </template>
 
 <script setup>
-import { reactive, onMounted, onUnmounted } from 'vue'
+import { reactive, ref, onMounted, onUnmounted } from 'vue'
 import Knob from './Knob.vue'
 import Slider from './Slider.vue'
 import Keyboard from './Keyboard.vue'
+import PianoRoll from './PianoRoll.vue'
 
 const waveforms = ['sine', 'square', 'sawtooth', 'triangle']
 const waveLabels = {
@@ -80,6 +87,7 @@ const noteFrequencies = {
 }
 
 const activeNotes = new Set()
+const sequencerNotes = ref([])
 let audioCtx = null
 let masterGain = null
 const activeOscillators = new Map()
@@ -170,6 +178,14 @@ function handleKeyUp(e) {
   if (note) {
     stopNote(note)
   }
+}
+
+function playSequencerNote(note) {
+  playNote(note)
+}
+
+function stopSequencerNote(note) {
+  stopNote(note)
 }
 
 onMounted(() => {
