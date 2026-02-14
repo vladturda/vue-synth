@@ -86,7 +86,7 @@ const noteFrequencies = {
   'G#': 415.30, 'A': 440.00, 'A#': 466.16, 'B': 493.88
 }
 
-const activeNotes = new Set()
+const activeNotes = reactive({})
 const sequencerNotes = ref([])
 let audioCtx = null
 let masterGain = null
@@ -145,7 +145,7 @@ function playNote(note) {
   osc.start()
   
   activeOscillators.set(note, { osc, gainNode })
-  activeNotes.add(note)
+  activeNotes[note] = true
 }
 
 function stopNote(note) {
@@ -163,7 +163,7 @@ function stopNote(note) {
     }, params.release * 1000 + 100)
     
     activeOscillators.delete(note)
-    activeNotes.delete(note)
+    delete activeNotes[note]
   }
 }
 

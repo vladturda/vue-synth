@@ -5,7 +5,7 @@
       :key="key.note"
       :type="key.type"
       :label="key.label"
-      :is-active="activeNotes.has(key.note)"
+      :is-active="activeNotes[key.note]"
       :style="{ left: key.position + 'px' }"
       @play="$emit('play', key.note)"
       @stop="$emit('stop', key.note)"
@@ -19,8 +19,8 @@ import Key from './Key.vue'
 
 const props = defineProps({
   activeNotes: {
-    type: Set,
-    default: () => new Set()
+    type: Object,
+    default: () => ({})
   }
 })
 
