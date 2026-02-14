@@ -40,6 +40,12 @@
             </div>
           </div>
           
+          <div 
+            v-if="isPlaying" 
+            class="playhead"
+            :style="{ left: currentColumnPosition + 'px' }"
+          ></div>
+          
           <div class="note-rows" ref="noteRowsRef" @click="onGridClick">
             <div 
               v-for="note in displayNotes" 
@@ -107,6 +113,10 @@ const gridWidth = computed(() => {
 
 const noteWidth = computed(() => gridWidth.value / totalBeats)
 
+const currentColumnPosition = computed(() => {
+  return currentBeat.value * noteWidth.value
+})
+
 let playTimeout = null
 let noteId = 0
 
@@ -169,13 +179,16 @@ function playNextBeat() {
     emit('play-note', n.note)
   })
   
-  currentBeat.value++
-  if (currentBeat.value >= totalBeats) {
-    currentBeat.value = 0
-  }
-  
   const beatDuration = 60000 / tempo.value
-  playTimeout = setTimeout(playNextBeat, beatDuration)
+  
+  playTimeout = setTimeout(() => {
+    if (currentBeat.value + 1 >= totalBeats) {
+      currentBeat.value = 0
+    } else {
+      currentBeat.value++
+    }
+    playNextBeat()
+  }, beatDuration)
 }
 
 function startPlayback() {
@@ -353,6 +366,17 @@ watch(() => props.modelValue, (newVal) => {
   left: 4px;
   font-size: 8px;
   color: #555;
+}
+
+.playhead {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: #ff006e;
+  z-index: 10;
+  pointer-events: none;
+  box-shadow: 0 0 8px #ff006e;
 }
 
 .note-rows {

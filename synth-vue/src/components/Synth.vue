@@ -1,5 +1,15 @@
 <template>
   <div class="synth">
+    <div class="view-toggle">
+      <button 
+        class="toggle-btn"
+        :class="{ active: showPianoRoll }"
+        @click="showPianoRoll = !showPianoRoll"
+      >
+        {{ showPianoRoll ? 'Hide' : 'Show' }} Piano Roll
+      </button>
+    </div>
+
     <div class="controls">
       <div class="control-group">
         <label>Oscillator</label>
@@ -49,6 +59,7 @@
     />
 
     <PianoRoll 
+      v-if="showPianoRoll"
       v-model="sequencerNotes"
       @play-note="playSequencerNote"
       @stop-note="stopSequencerNote"
@@ -62,6 +73,8 @@ import Knob from './Knob.vue'
 import Slider from './Slider.vue'
 import Keyboard from './Keyboard.vue'
 import PianoRoll from './PianoRoll.vue'
+
+const showPianoRoll = ref(false)
 
 const waveforms = ['sine', 'square', 'sawtooth', 'triangle']
 const waveLabels = {
@@ -212,6 +225,29 @@ onUnmounted(() => {
   border: 1px solid rgba(255, 255, 255, 0.1);
   max-width: 900px;
   width: 100%;
+}
+
+.view-toggle {
+  display: flex;
+  margin-bottom: 20px;
+}
+
+.toggle-btn {
+  padding: 10px 20px;
+  border: 1px solid #444;
+  background: #2a2a4a;
+  color: #888;
+  cursor: pointer;
+  font-size: 12px;
+  text-transform: uppercase;
+  transition: all 0.2s;
+  border-radius: 5px;
+}
+
+.toggle-btn.active {
+  background: #00d9ff;
+  color: #1a1a2e;
+  border-color: #00d9ff;
 }
 
 .controls {
