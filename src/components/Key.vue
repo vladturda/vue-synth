@@ -2,16 +2,16 @@
   <div 
     class="key"
     :class="[type, { active: isActive }]"
-    @mousedown="$emit('play')"
-    @mouseup="$emit('stop')"
-    @mouseleave="$emit('stop')"
+    @mousedown="$emit('playNote')"
+    @mouseup="$emit('stopNote')"
+    @mouseleave="$emit('stopNote')"
   >
     <span class="key-label">{{ label }}</span>
   </div>
 </template>
 
 <script setup>
-defineProps({
+const props = defineProps({
   type: {
     type: String,
     required: true
@@ -24,24 +24,25 @@ defineProps({
     type: Boolean,
     default: false
   }
-})
+});
 
-defineEmits(['play', 'stop'])
+defineEmits(['playNote', 'stopNote']);
 </script>
 
 <style scoped>
 .key {
   cursor: pointer;
   position: absolute;
-  top: 20px;
+  top: 0px;
+  margin: 30px;
   transition: all 0.1s ease;
 }
 
 .key.white {
-  width: 50px;
+  width: 48px;
   height: 180px;
   background: linear-gradient(180deg, #f5f5f5 0%, #e0e0e0 100%);
-  border: 1px solid #ccc;
+  border: 1px solid #121212;
   border-radius: 0 0 5px 5px;
   box-shadow: 
     0 5px 15px rgba(0, 0, 0, 0.3),
@@ -55,9 +56,9 @@ defineEmits(['play', 'stop'])
 .key.white:active, .key.white.active {
   background: linear-gradient(180deg, #00d9ff 0%, #0099cc 100%);
   transform: translateY(3px);
-  box-shadow: 
+  /* box-shadow: 
     0 2px 10px rgba(0, 217, 255, 0.5),
-    inset 0 -2px 5px rgba(0, 0, 0, 0.2);
+    inset 0 -2px 5px rgba(0, 0, 0, 0.2); */
 }
 
 .key.black {

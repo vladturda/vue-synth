@@ -54,16 +54,16 @@
 
     <Keyboard 
       :active-notes="activeNotes"
-      @play="playNote"
-      @stop="stopNote"
+      @playNote="playNote"
+      @stopNote="stopNote"
     />
 
     <PianoRoll 
       v-if="showPianoRoll"
       v-model="sequencerNotes"
       ref="pianoRollRef"
-      @play-note="playSequencerNote"
-      @stop-note="stopSequencerNote"
+      @playNote="playNote"
+      @stopNote="stopNote"
     />
   </div>
 </template>
@@ -201,14 +201,6 @@ function handleKeyUp(e) {
       pianoRollRef.value.stopNoteRecording(note, true)
     }
   }
-}
-
-function playSequencerNote(note) {
-  playNote(note)
-}
-
-function stopSequencerNote(note) {
-  stopNote(note)
 }
 
 onMounted(() => {

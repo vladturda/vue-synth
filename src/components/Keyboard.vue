@@ -7,24 +7,24 @@
       :label="key.label"
       :is-active="activeNotes[key.note]"
       :style="{ left: key.position + 'px' }"
-      @play="$emit('play', key.note)"
-      @stop="$emit('stop', key.note)"
+      @playNote="$emit('playNote', key.note)"
+      @stopNote="$emit('stopNote', key.note)"
     />
   </div>
 </template>
 
 <script setup>
-import { computed } from 'vue'
-import Key from './Key.vue'
+import { computed } from 'vue';
+import Key from './Key.vue';
 
 const props = defineProps({
   activeNotes: {
     type: Object,
     default: () => ({})
   }
-})
+});
 
-defineEmits(['play', 'stop'])
+defineEmits(['playNote', 'stopNote']);
 
 const keyDefinitions = [
   { note: 'C3', type: 'white', label: 'C' },
@@ -51,26 +51,27 @@ const keyDefinitions = [
   { note: 'A4', type: 'white', label: 'A' },
   { note: 'A#4', type: 'black', label: 'A#' },
   { note: 'B4', type: 'white', label: 'B' }
-]
+];
 
-const whiteKeyWidth = 52
-const blackKeyWidth = 35
-const offset = 50
+const whiteKeyWidth = 50;
+const blackKeyWidth = 35;
 
 const keys = computed(() => {
-  let whiteKeyIndex = 0
-  return keyDefinitions.map(key => {
-    let position
+  let whiteKeyIndex = 0;
+  return keyDefinitions.map((key, index) => {
+    let position;
+
     if (key.type === 'white') {
-      position = whiteKeyIndex * whiteKeyWidth + offset
-      whiteKeyIndex++
+      position = whiteKeyIndex * whiteKeyWidth;
+      whiteKeyIndex++;
     } else {
-      position = whiteKeyIndex * whiteKeyWidth - blackKeyWidth / 2 + offset
+      position = whiteKeyIndex * whiteKeyWidth - blackKeyWidth / 2;
     }
+    
     return {
       ...key,
       position
-    }
+    };
   })
 })
 </script>
@@ -79,11 +80,11 @@ const keys = computed(() => {
 .keyboard {
   display: block;
   position: relative;
-  padding: 20px;
+  padding: 30px;
   background: linear-gradient(180deg, #1a1a2e, #0f0f1e);
   border-radius: 10px;
   box-shadow: inset 0 5px 15px rgba(0, 0, 0, 0.5);
   height: 240px;
-  width: 820px;
+  width: 760px;
 }
 </style>

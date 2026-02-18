@@ -262,10 +262,10 @@ function playNextTick() {
     const isNoteEnd = currentTickVal === Math.floor(noteEndTick)
     
     if (isNoteStart) {
-      emit('play-note', n.note)
+      emit('playNote', n.note)
       n.playing = true
     } else if (isNoteEnd || (n.playing && currentTickVal > noteEndTick)) {
-      emit('stop-note', n.note)
+      emit('stopNote', n.note)
       n.playing = false
     }
   })
