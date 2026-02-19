@@ -27,6 +27,16 @@
       </div>
 
       <div class="control-group">
+        <label>Volume</label>
+        <Slider v-model="params.volume" :min="0" :max="1" :step="0.01" format="percent" />
+      </div>
+
+      <div class="control-group">
+        <label>Octave</label>
+        <Slider v-model="params.octave" :min="2" :max="6" :step="1" />
+      </div>
+
+      <div class="control-group">
         <label>Attack</label>
         <Knob v-model="params.attack" :min="0.01" :max="1" :step="0.01" format="s" />
       </div>
@@ -41,15 +51,6 @@
         <Knob v-model="params.detune" :min="-50" :max="50" :step="1" format="" />
       </div>
 
-      <div class="control-group">
-        <label>Volume</label>
-        <Slider v-model="params.volume" :min="0" :max="1" :step="0.01" format="percent" />
-      </div>
-
-      <div class="control-group">
-        <label>Octave</label>
-        <Slider v-model="params.octave" :min="2" :max="6" :step="1" />
-      </div>
     </div>
 
     <Keyboard 
@@ -251,9 +252,8 @@ onUnmounted(() => {
 }
 
 .controls {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-  gap: 25px;
+  display: flex;
+  flex-wrap: wrap;
   margin-bottom: 30px;
 }
 
@@ -262,6 +262,7 @@ onUnmounted(() => {
   flex-direction: column;
   align-items: center;
   gap: 10px;
+  flex: 1 1 calc(33% - 20px);
 }
 
 .control-group label {

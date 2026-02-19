@@ -1,5 +1,5 @@
 <template>
-  <div 
+  <button 
     class="key"
     :class="[type, { active: isActive }]"
     @mousedown="$emit('playNote')"
@@ -7,7 +7,7 @@
     @mouseleave="$emit('stopNote')"
   >
     <span class="key-label">{{ label }}</span>
-  </div>
+  </button>
 </template>
 
 <script setup>
