@@ -240,10 +240,13 @@ onUnmounted(() => {
   display: flex;
   margin-bottom: 20px;
 }
+.pianoroll-toggle .toggle-btn {
+  width: 10rem;
+}
 
 .toggle-btn {
   padding: 10px 20px;
-  border: 1px solid #444;
+  border: 0px solid #444;
   background: #2a2a4a;
   color: #888;
   cursor: pointer;
@@ -294,7 +297,7 @@ onUnmounted(() => {
 
 .wave-btn {
   padding: 8px 12px;
-  border: 1px solid #444;
+  border: 0px solid #444;
   background: #2a2a4a;
   color: #888;
   cursor: pointer;
