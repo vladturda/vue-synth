@@ -37,7 +37,7 @@
         </div>
       </div>
       
-      <div class="roll-grid" ref="gridRef" @scroll="handleScroll">
+      <div class="roll-grid" ref="gridRef">
         <div class="grid-content">
           <div class="beat-lines">
             <div 
@@ -285,7 +285,7 @@ function playNextTick() {
   const tickDuration = 60000 / (tempo.value * ticksPerBeat);
   
   playTimeout = setTimeout(() => {
-    if (currentTick.value + 1 >= totalTicks) {
+    if (currentTick.value + 1 > totalTicks) {
       currentTick.value = 0;
     } else {
       currentTick.value++;
@@ -314,10 +314,6 @@ function stopPlayback() {
     }
     n.playing = false;
   })
-}
-
-function handleScroll(e) {
-  // Handle scroll sync if needed
 }
 
 onUnmounted(() => {
@@ -442,7 +438,7 @@ defineExpose({
 }
 
 .note-label {
-  font-size: 8px;
+  font-size: 12px;
   color: #666;
 }
 
@@ -455,6 +451,7 @@ defineExpose({
 .grid-content {
   position: relative;
   height: 100%;
+  overflow: hidden;
 }
 
 .beat-lines {
@@ -523,7 +520,8 @@ defineExpose({
 .note-row.is-black {
   background: #151525;
 }
+
 .note-row.is-active {
-  background: #181857;
+  background: #0f276c;
 }
 </style>
