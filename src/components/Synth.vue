@@ -214,7 +214,7 @@ onUnmounted(() => {
 
 <style scoped>
 .synth {
-  background: linear-gradient(180deg, #0b0b15, #2e2e44);
+  background: linear-gradient(180deg, #0b0b15, #141548);
   border-radius: 20px;
   padding: 30px;
   box-shadow:  0 20px 60px rgba(0, 0, 0, 0.5);
