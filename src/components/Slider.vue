@@ -65,6 +65,7 @@ const displayValue = computed(() => {
 
 .slider {
   -webkit-appearance: none;
+  appearance: none;
   width: 120px;
   height: 8px;
   border-radius: 4px;
@@ -75,6 +76,7 @@ const displayValue = computed(() => {
 
 .slider::-webkit-slider-thumb {
   -webkit-appearance: none;
+  appearance: none;
   width: 24px;
   height: 24px;
   border-radius: 50%;
