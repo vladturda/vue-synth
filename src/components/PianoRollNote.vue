@@ -46,6 +46,7 @@ function removeNote() {
   border-radius: 2px;
   cursor: pointer;
   transition: background 0.1s;
+  z-index: 3;
 }
 
 .note:hover {

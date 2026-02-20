@@ -66,6 +66,7 @@
       v-show="showPianoRoll"
       v-model="sequencerNotes"
       ref="pianoRollRef"
+      :active-notes="activeNotes"
       @playNote="playNote"
       @stopNote="stopNote"
     />

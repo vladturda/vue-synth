@@ -68,7 +68,7 @@
               v-for="note in displayNotes" 
               :key="note"
               class="note-row"
-              :class="{ 'is-black': note.includes('#') }"
+              :class="{ 'is-black': note.includes('#'), 'is-active': activeNotes[note] }"
               :note="note"
               @click="onRowClick"
             >
@@ -100,6 +100,10 @@ const notes = defineModel({
 });
 
 const props = defineProps({
+  activeNotes: {
+    type: Object,
+    default: () => ({})
+  },
   recordEnabled: {
     type: Boolean,
     default: false
@@ -116,7 +120,7 @@ const currentTick = ref(0);
 const gridRef = ref(null);
 
 const displayNotes = [
-  'C5', 'B4', 'A#4', 'A4', 'G#4', 'G4', 'F#4', 'F4', 'E4', 'D#4', 'D4', 'C#4', 'C4',
+  'B4', 'A#4', 'A4', 'G#4', 'G4', 'F#4', 'F4', 'E4', 'D#4', 'D4', 'C#4', 'C4',
   'B3', 'A#3', 'A3', 'G#3', 'G3', 'F#3', 'F3', 'E3', 'D#3', 'D3', 'C#3', 'C3'
 ];
 
@@ -293,7 +297,7 @@ function playNextTick() {
 function startPlayback() {
   isPlaying.value = true;
   isPlayingBack.value = true;
-  currentTick.value = 1;
+  currentTick.value = 0;
   playNextTick();
 }
 
@@ -460,6 +464,7 @@ defineExpose({
   right: 0;
   height: 100%;
   pointer-events: none;
+  z-index: 2;
 }
 
 .beat-line {
@@ -517,5 +522,8 @@ defineExpose({
 
 .note-row.is-black {
   background: #151525;
+}
+.note-row.is-active {
+  background: #181857;
 }
 </style>
