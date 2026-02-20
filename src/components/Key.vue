@@ -56,9 +56,6 @@ defineEmits(['playNote', 'stopNote']);
 .key.white:active, .key.white.active {
   background: linear-gradient(180deg, #00d9ff 0%, #0099cc 100%);
   transform: translateY(3px);
-  /* box-shadow: 
-    0 2px 10px rgba(0, 217, 255, 0.5),
-    inset 0 -2px 5px rgba(0, 0, 0, 0.2); */
 }
 
 .key.black {

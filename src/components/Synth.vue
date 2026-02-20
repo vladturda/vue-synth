@@ -214,13 +214,10 @@ onUnmounted(() => {
 
 <style scoped>
 .synth {
-  background: linear-gradient(145deg, #2a2a4a, #1a1a2e);
+  background: linear-gradient(180deg, #0b0b15, #2e2e44);
   border-radius: 20px;
   padding: 30px;
-  box-shadow: 
-    0 20px 60px rgba(0, 0, 0, 0.5),
-    inset 0 1px 0 rgba(255, 255, 255, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow:  0 20px 60px rgba(0, 0, 0, 0.5);
   max-width: 900px;
   width: 100%;
 }
