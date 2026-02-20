@@ -262,7 +262,7 @@ onUnmounted(() => {
 .controls {
   display: flex;
   flex-wrap: wrap;
-  margin-bottom: 30px;
+  margin-bottom: 20px;
 }
 
 .control-group {
