@@ -192,11 +192,6 @@ function playNextTick() {
     
     const isNoteStart = currentTickVal === Math.floor(noteStartTick);
     const isNoteEnd = currentTickVal === Math.floor(noteEndTick);
-
-    if(currentTickVal == 0) {
-      emit('stopNote', n.note);
-      n.playing = false;
-    }
     
     if (isNoteStart) {
       emit('playNote', n.note);
@@ -211,6 +206,10 @@ function playNextTick() {
   
   playTimeout = setTimeout(() => {
     if (currentTick.value + 1 >= totalTicks) {
+      notes.value.forEach(n => {
+        emit('stopNote', n.note);
+        n.playing = false;
+      });
       currentTick.value = 0;
     } else {
       currentTick.value++;
