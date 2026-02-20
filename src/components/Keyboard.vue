@@ -73,7 +73,7 @@ const keys = computed(() => {
       position
     };
   })
-})
+});
 </script>
 
 <style scoped>

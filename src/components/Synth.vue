@@ -74,22 +74,22 @@
 </template>
 
 <script setup>
-import { reactive, ref, onMounted, onUnmounted } from 'vue'
-import Knob from './Knob.vue'
-import Slider from './Slider.vue'
-import Keyboard from './Keyboard.vue'
-import PianoRoll from './PianoRoll.vue'
+import { reactive, ref, onMounted, onUnmounted } from 'vue';
+import Knob from './Knob.vue';
+import Slider from './Slider.vue';
+import Keyboard from './Keyboard.vue';
+import PianoRoll from './PianoRoll.vue';
 
-const showPianoRoll = ref(false)
-const pianoRollRef = ref(null)
+const showPianoRoll = ref(false);
+const pianoRollRef = ref(null);
 
-const waveforms = ['sine', 'square', 'sawtooth', 'triangle']
+const waveforms = ['sine', 'square', 'sawtooth', 'triangle'];
 const waveLabels = {
   sine: 'Sine',
   square: 'Square',
   sawtooth: 'Saw',
   triangle: 'Tri'
-}
+};
 
 const params = reactive({
   waveform: 'sine',
@@ -98,19 +98,19 @@ const params = reactive({
   detune: 0,
   volume: 0.5,
   octave: 4
-})
+});
 
 const noteFrequencies = {
   'C': 261.63, 'C#': 277.18, 'D': 293.66, 'D#': 311.13,
   'E': 329.63, 'F': 349.23, 'F#': 369.99, 'G': 392.00,
   'G#': 415.30, 'A': 440.00, 'A#': 466.16, 'B': 493.88
-}
+};
 
-const activeNotes = reactive({})
-const sequencerNotes = ref([])
-let audioCtx = null
-let masterGain = null
-const activeOscillators = new Map()
+const activeNotes = reactive({});
+const sequencerNotes = ref([]);
+let audioCtx = null;
+let masterGain = null;
+const activeOscillators = new Map();
 
 const keyMap = {
   'q': 'C3', '2': 'C#3', 'w': 'D3', '3': 'D#3', 'e': 'E3',
@@ -119,103 +119,103 @@ const keyMap = {
   'z': 'C4', 's': 'C#4', 'x': 'D4', 'd': 'D#4', 'c': 'E4',
   'v': 'F4', 'g': 'F#4', 'b': 'G4', 'h': 'G#4', 'n': 'A4',
   'j': 'A#4', 'm': 'B4'
-}
+};
 
 function getFrequency(noteWithOctave) {
-  const note = noteWithOctave.slice(0, -1)
-  const octaveChar = noteWithOctave.slice(-1)
-  const octave = parseInt(octaveChar) + (params.octave - 4)
-  const baseFreq = noteFrequencies[note]
-  return baseFreq * Math.pow(2, octave - 4)
+  const note = noteWithOctave.slice(0, -1);
+  const octaveChar = noteWithOctave.slice(-1);
+  const octave = parseInt(octaveChar) + (params.octave - 4);
+  const baseFreq = noteFrequencies[note];
+  return baseFreq * Math.pow(2, octave - 4);
 }
 
 function initAudio() {
   if (!audioCtx) {
-    audioCtx = new (window.AudioContext || window.webkitAudioContext)()
-    masterGain = audioCtx.createGain()
-    masterGain.gain.value = params.volume
-    masterGain.connect(audioCtx.destination)
+    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    masterGain = audioCtx.createGain();
+    masterGain.gain.value = params.volume;
+    masterGain.connect(audioCtx.destination);
   }
 }
 
 function playNote(note) {
-  initAudio()
+  initAudio();
   
   if (audioCtx.state === 'suspended') {
-    audioCtx.resume()
+    audioCtx.resume();
   }
 
   if (activeOscillators.has(note)) {
-    stopNote(note)
+    stopNote(note);
   }
 
-  const osc = audioCtx.createOscillator()
-  const gainNode = audioCtx.createGain()
+  const osc = audioCtx.createOscillator();
+  const gainNode = audioCtx.createGain();
   
-  osc.type = params.waveform
-  osc.frequency.value = getFrequency(note)
-  osc.detune.value = params.detune
+  osc.type = params.waveform;
+  osc.frequency.value = getFrequency(note);
+  osc.detune.value = params.detune;
   
-  gainNode.gain.setValueAtTime(0, audioCtx.currentTime)
-  gainNode.gain.linearRampToValueAtTime(params.volume, audioCtx.currentTime + params.attack)
+  gainNode.gain.setValueAtTime(0, audioCtx.currentTime);
+  gainNode.gain.linearRampToValueAtTime(params.volume, audioCtx.currentTime + params.attack);
   
-  osc.connect(gainNode)
-  gainNode.connect(masterGain)
+  osc.connect(gainNode);
+  gainNode.connect(masterGain);
   
-  osc.start()
+  osc.start();
   
-  activeOscillators.set(note, { osc, gainNode })
-  activeNotes[note] = true
+  activeOscillators.set(note, { osc, gainNode });
+  activeNotes[note] = true;
 }
 
 function stopNote(note) {
-  const nodes = activeOscillators.get(note)
+  const nodes = activeOscillators.get(note);
   if (nodes) {
-    const { osc, gainNode } = nodes
-    gainNode.gain.cancelScheduledValues(audioCtx.currentTime)
-    gainNode.gain.setValueAtTime(gainNode.gain.value, audioCtx.currentTime)
-    gainNode.gain.linearRampToValueAtTime(0, audioCtx.currentTime + params.release)
+    const { osc, gainNode } = nodes;
+    gainNode.gain.cancelScheduledValues(audioCtx.currentTime);
+    gainNode.gain.setValueAtTime(gainNode.gain.value, audioCtx.currentTime);
+    gainNode.gain.linearRampToValueAtTime(0, audioCtx.currentTime + params.release);
     
     setTimeout(() => {
-      osc.stop()
-      osc.disconnect()
-      gainNode.disconnect()
-    }, params.release * 1000 + 100)
+      osc.stop();
+      osc.disconnect();
+      gainNode.disconnect();
+    }, params.release * 1000 + 100);
     
-    activeOscillators.delete(note)
-    delete activeNotes[note]
+    activeOscillators.delete(note);
+    delete activeNotes[note];
   }
 }
 
 function handleKeyDown(e) {
-  if (e.repeat) return
-  const note = keyMap[e.key.toLowerCase()]
+  if (e.repeat) return;
+  const note = keyMap[e.key.toLowerCase()];
   if (note && !activeOscillators.has(note)) {
-    playNote(note)
+    playNote(note);
     if (pianoRollRef.value) {
-      pianoRollRef.value.startNoteRecording(note, true)
+      pianoRollRef.value.startNoteRecording(note, true);
     }
   }
 }
 
 function handleKeyUp(e) {
-  const note = keyMap[e.key.toLowerCase()]
+  const note = keyMap[e.key.toLowerCase()];
   if (note) {
-    stopNote(note)
+    stopNote(note);
     if (pianoRollRef.value) {
-      pianoRollRef.value.stopNoteRecording(note, true)
+      pianoRollRef.value.stopNoteRecording(note, true);
     }
   }
 }
 
 onMounted(() => {
-  document.addEventListener('keydown', handleKeyDown)
-  document.addEventListener('keyup', handleKeyUp)
+  document.addEventListener('keydown', handleKeyDown);
+  document.addEventListener('keyup', handleKeyUp);
 })
 
 onUnmounted(() => {
-  document.removeEventListener('keydown', handleKeyDown)
-  document.removeEventListener('keyup', handleKeyUp)
+  document.removeEventListener('keydown', handleKeyDown);
+  document.removeEventListener('keyup', handleKeyUp);
 })
 </script>
 

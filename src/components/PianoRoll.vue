@@ -131,15 +131,15 @@ const gridWidth = computed(() => {
     return gridRef.value.clientWidth;
   }
   return totalBeats * beatWidth;
-})
+});
 
 const noteWidth = computed(() => {
   return gridWidth.value / totalBeats;
-})
+});
 
 const currentColumnPosition = computed(() => {
   return currentTick.value * noteWidth.value;
-})
+});
 
 let playTimeout = null;
 let noteId = 0;

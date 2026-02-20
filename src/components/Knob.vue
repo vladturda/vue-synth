@@ -46,18 +46,18 @@ const startValue = ref(0);
 
 const normalizedValue = computed(() => {
   return (model.value - props.min) / (props.max - props.min);
-})
+});
 
 const rotation = computed(() => {
   return normalizedValue.value * 270 - 135;
-})
+});
 
 const displayValue = computed(() => {
   if (props.format === 's') {
     return model.value.toFixed(2) + 's';
   }
   return Math.round(model.value);
-})
+});
 
 function startDrag(e) {
   isDragging.value = true;
@@ -79,13 +79,12 @@ function onDrag(e) {
   const steppedValue = Math.round(rawValue / props.step) * props.step;
   
   model.value = steppedValue;
-  //emit('update:modelValue', steppedValue);
 }
 
 function stopDrag() {
-  isDragging.value = false
-  document.removeEventListener('mousemove', onDrag)
-  document.removeEventListener('mouseup', stopDrag)
+  isDragging.value = false;
+  document.removeEventListener('mousemove', onDrag);
+  document.removeEventListener('mouseup', stopDrag);
 }
 </script>
 
