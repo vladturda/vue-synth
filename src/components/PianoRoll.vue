@@ -348,7 +348,7 @@ onUnmounted(() => {
 
 .note-label {
   font-size: 12px;
-  color: #666;
+  color: #FFF;
 }
 
 .roll-grid {
@@ -378,7 +378,8 @@ onUnmounted(() => {
   top: 0;
   bottom: 0;
   width: 1px;
-  background: #222;
+  background: #555;
+  z-index: 3;
 }
 
 .beat-line.major {
@@ -395,10 +396,10 @@ onUnmounted(() => {
 
 .beat-label {
   position: absolute;
-  top: 2px;
-  left: 4px;
-  font-size: 8px;
-  color: #555;
+  top: 1px;
+  left: 8px;
+  font-size: 12px;
+  color: #FFF;
 }
 
 .playhead {
