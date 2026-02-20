@@ -127,10 +127,6 @@ const noteWidth = computed(() => {
   return gridWidth.value / totalBeats;
 });
 
-const currentColumnPosition = computed(() => {
-  return currentTick.value * noteWidth.value;
-});
-
 let playTimeout = null;
 let noteId = 0;
 
@@ -150,7 +146,7 @@ function addNote(note, beat) {
         id: noteId++,
         note,
         start: beat,
-        duration: 8/8,
+        duration: 2/8,
         playing: false
       });
   }
@@ -163,7 +159,6 @@ function removeNote(note) {
   }
 }
 
-// Handle click on grid to add notes
 function onRowClick(event) {
   const rect = event.target.getBoundingClientRect();
   
@@ -174,6 +169,9 @@ function onRowClick(event) {
 }
 
 function clearNotes() {
+  notes.value.forEach(n => {
+    emit('stopNote', n.note);
+  });
   notes.value = [];
 }
 
@@ -278,6 +276,8 @@ onUnmounted(() => {
   border-radius: 5px;
   cursor: pointer;
   font-weight: bold;
+  text-transform: uppercase;
+  font-size: 12px;
 }
 
 .roll-btn:hover {

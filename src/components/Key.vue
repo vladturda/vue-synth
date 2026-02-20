@@ -89,7 +89,7 @@ defineEmits(['playNote', 'stopNote']);
   bottom: 15px;
   left: 50%;
   transform: translateX(-50%);
-  font-size: 10px;
+  font-size: 12px;
   color: #666;
   text-transform: uppercase;
   pointer-events: none;
@@ -97,6 +97,6 @@ defineEmits(['playNote', 'stopNote']);
 
 .key.black .key-label {
   color: #666;
-  font-size: 9px;
+  font-size: 12px;
 }
 </style>

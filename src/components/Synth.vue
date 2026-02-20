@@ -301,7 +301,7 @@ onUnmounted(() => {
   background: #2a2a4a;
   color: #888;
   cursor: pointer;
-  font-size: 11px;
+  font-size: 12px;
   text-transform: uppercase;
   transition: all 0.2s;
 }
