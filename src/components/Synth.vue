@@ -91,7 +91,7 @@ const waveLabels = {
 };
 
 const params = reactive({
-  waveform: 'sine',
+  waveform: 'square',
   attack: 0.01,
   release: 0.5,
   detune: 0,

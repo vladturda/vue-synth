@@ -9,8 +9,8 @@
       :value="model"
       @input="model = parseFloat($event.target.value)"
     >
-    <span class="slider-value" v-if="showValue">{{ displayValue }}</span>
   </div>
+  <span class="slider-value" v-if="showValue">{{ displayValue }}</span>
 </template>
 
 <script setup>
@@ -61,6 +61,7 @@ const displayValue = computed(() => {
   flex-direction: column;
   align-items: center;
   gap: 10px;
+  margin: 12px 0;
 }
 
 .slider {
