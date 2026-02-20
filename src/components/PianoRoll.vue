@@ -5,15 +5,6 @@
         <button class="roll-btn" @click="togglePlay">
           {{ isPlaying ? 'Stop' : 'Play' }}
         </button>
-        
-        <button 
-          class="roll-btn record-btn" 
-          :class="{ recording: isRecording }"
-          @click="toggleRecord"
-          :disabled="!isPlaying"
-        >
-          {{ isRecording ? 'Recording' : 'Record' }}
-        </button>
 
         <button class="roll-btn" @click="clearNotes">Clear</button>
 
@@ -103,10 +94,6 @@ const props = defineProps({
   activeNotes: {
     type: Object,
     default: () => ({})
-  },
-  recordEnabled: {
-    type: Boolean,
-    default: false
   }
 });
 
@@ -114,7 +101,6 @@ const emit = defineEmits(['playNote', 'stopNote', 'noteTriggered']);
 
 const tempo = ref(120);
 const isPlaying = ref(false);
-const isRecording = ref(false);
 const isPlayingBack = ref(false);
 const currentTick = ref(0);
 const gridRef = ref(null);
@@ -147,9 +133,6 @@ const currentColumnPosition = computed(() => {
 
 let playTimeout = null;
 let noteId = 0;
-let recordingStartTime = 0;
-let recordingTickStart = 0;
-const activeRecordingNotes = {};
 
 const notesPerRow = computed(() => {
   const rows = {};
@@ -167,7 +150,7 @@ function addNote(note, beat) {
         id: noteId++,
         note,
         start: beat,
-        duration: 2/8,
+        duration: 8/8,
         playing: false
       });
   }
@@ -188,64 +171,6 @@ function onRowClick(event) {
   const beat = Math.floor((x / rect.width) * totalBeats * 8) / 8;
   
   addNote(event.target.getAttribute('note'), beat);
-}
-
-function getCurrentRecordingTick() {
-  if (!isPlaying.value || !isRecording.value) return 0;
-  const elapsedMs = performance.now() - recordingStartTime;
-  const tickDuration = 60000 / (tempo.value * ticksPerBeat);
-  return recordingTickStart + Math.floor(elapsedMs / tickDuration);
-}
-
-function startNoteRecording(note, fromKeyboard = true) {
-  if (!isRecording.value || !fromKeyboard) return;
-  
-  if (!activeRecordingNotes[note]) {
-    activeRecordingNotes[note] = {
-      startTick: getCurrentRecordingTick(),
-      startTime: performance.now()
-    };
-  }
-}
-
-function stopNoteRecording(note, fromKeyboard = true) {
-  if (!isRecording.value || !fromKeyboard) return;
-  
-  const recording = activeRecordingNotes[note];
-  if (!recording) return;
-  
-  const endTick = getCurrentRecordingTick();
-  const startTick = recording.startTick;
-  const duration = Math.max(0.0625, (endTick - startTick) / ticksPerBeat);
-  
-  const startBeat = startTick / ticksPerBeat;
-  
-  const existing = notes.value.find(n => n.note === note && 
-    startBeat >= n.start && startBeat < n.start + n.duration);
-  
-  if (!existing) {
-    notes.value.push({
-      id: noteId++,
-      note,
-      start: startBeat,
-      duration,
-      playing: false
-    });
-  }
-  
-  delete activeRecordingNotes[note];
-}
-
-function toggleRecord() {
-  isRecording.value = !isRecording.value;
-  if (isRecording.value) {
-    recordingStartTime = performance.now();
-    recordingTickStart = currentTick.value;
-  } else {
-    Object.keys(activeRecordingNotes).forEach(note => {
-      delete activeRecordingNotes[note];
-    })
-  }
 }
 
 function clearNotes() {
@@ -272,6 +197,11 @@ function playNextTick() {
     
     const isNoteStart = currentTickVal === Math.floor(noteStartTick);
     const isNoteEnd = currentTickVal === Math.floor(noteEndTick);
+
+    if(currentTickVal == 0) {
+      emit('stopNote', n.note);
+      n.playing = false;
+    }
     
     if (isNoteStart) {
       emit('playNote', n.note);
@@ -285,7 +215,7 @@ function playNextTick() {
   const tickDuration = 60000 / (tempo.value * ticksPerBeat);
   
   playTimeout = setTimeout(() => {
-    if (currentTick.value + 1 > totalTicks) {
+    if (currentTick.value + 1 >= totalTicks) {
       currentTick.value = 0;
     } else {
       currentTick.value++;
@@ -310,24 +240,16 @@ function stopPlayback() {
   }
   notes.value.forEach(n => {
     if (n.playing) {
-      emit('stop-note', n.note);
+      emit('stopNote', n.note);
     }
     n.playing = false;
   })
 }
 
 onUnmounted(() => {
-  stopPlayback()
+  stopPlayback();
 });
 
-watch(() => props.recordEnabled, (newVal) => {
-  isRecording.value = newVal
-});
-
-defineExpose({
-  startNoteRecording,
-  stopNoteRecording
-});
 </script>
 
 <style scoped>
@@ -365,19 +287,6 @@ defineExpose({
 .roll-btn:disabled {
   opacity: 0.5;
   cursor: not-allowed;
-}
-
-.roll-btn.record-btn {
-  background: #ff006e;
-}
-
-.roll-btn.record-btn:hover:not(:disabled) {
-  background: #ff4d94;
-}
-
-.roll-btn.record-btn.recording {
-  background: #ff0044;
-  animation: pulse 1s infinite;
 }
 
 @keyframes pulse {

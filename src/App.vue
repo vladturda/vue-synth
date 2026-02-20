@@ -3,7 +3,6 @@ import Synth from './components/Synth.vue'
 </script>
 
 <template>
-    <h1>JS Synth</h1>
     <Synth />
 </template>
 

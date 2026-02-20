@@ -1,16 +1,17 @@
 <template>
   <div class="synth">
+    <div class="synth-header">
+      <h1 class="synth-title">Vue Synth</h1>
 
-    <h1>JS Synth</h1>
-
-    <div class="view-toggle">
-      <button 
-        class="toggle-btn"
-        :class="{ active: showPianoRoll }"
-        @click="showPianoRoll = !showPianoRoll"
-      >
-        {{ showPianoRoll ? 'Hide' : 'Show' }} Piano Roll
-      </button>
+      <div class="pianoroll-toggle">
+        <button 
+          class="toggle-btn"
+          :class="{ active: showPianoRoll }"
+          @click="showPianoRoll = !showPianoRoll"
+        >
+          {{ showPianoRoll ? 'Hide' : 'Show' }} Piano Roll
+        </button>
+      </div>
     </div>
 
     <div class="controls">
@@ -65,7 +66,6 @@
     <PianoRoll 
       v-show="showPianoRoll"
       v-model="sequencerNotes"
-      ref="pianoRollRef"
       :active-notes="activeNotes"
       @playNote="playNote"
       @stopNote="stopNote"
@@ -81,7 +81,6 @@ import Keyboard from './Keyboard.vue';
 import PianoRoll from './PianoRoll.vue';
 
 const showPianoRoll = ref(false);
-const pianoRollRef = ref(null);
 
 const waveforms = ['sine', 'square', 'sawtooth', 'triangle'];
 const waveLabels = {
@@ -192,9 +191,6 @@ function handleKeyDown(e) {
   const note = keyMap[e.key.toLowerCase()];
   if (note && !activeOscillators.has(note)) {
     playNote(note);
-    if (pianoRollRef.value) {
-      pianoRollRef.value.startNoteRecording(note, true);
-    }
   }
 }
 
@@ -202,9 +198,6 @@ function handleKeyUp(e) {
   const note = keyMap[e.key.toLowerCase()];
   if (note) {
     stopNote(note);
-    if (pianoRollRef.value) {
-      pianoRollRef.value.stopNoteRecording(note, true);
-    }
   }
 }
 
@@ -232,7 +225,21 @@ onUnmounted(() => {
   width: 100%;
 }
 
-.view-toggle {
+.synth-header {
+  display: flex;
+  flex-direction: row;
+}
+
+.synth-header .synth-title {
+  flex: 1 1 50%;
+}
+
+.synth-header .pianoroll-toggle {
+  flex: 1 1 50%;
+  justify-content: right;
+}
+
+.pianoroll-toggle {
   display: flex;
   margin-bottom: 20px;
 }
