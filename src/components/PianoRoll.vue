@@ -263,6 +263,7 @@ onUnmounted(() => {
   display: flex;
   align-items: center;
   gap: 15px;
+  justify-content: space-between;
 }
 
 .roll-btn {
@@ -297,6 +298,7 @@ onUnmounted(() => {
   gap: 10px;
   color: #888;
   font-size: 12px;
+  width: 35%;
 }
 
 .tempo-control label {
@@ -318,6 +320,7 @@ onUnmounted(() => {
   gap: 10px;
   color: #888;
   font-size: 12px;
+  width: 35%;
 }
 
 .note-length-control label {
