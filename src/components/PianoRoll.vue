@@ -79,7 +79,7 @@
                   :duration="n.duration"
                   :playing="n.playing"
                   :total-beats="totalBeats"
-                  @remove="removeNote(n)"
+                  @removeNote="removeNote(n)"
                 />
             </div>
           </div>
@@ -94,7 +94,10 @@ import { ref, computed, onUnmounted, watch } from 'vue';
 import Slider from './Slider.vue';
 import PianoRollNote from './PianoRollNote.vue';
 
-const notes = defineModel({ type: Array, default: () => [] });
+const notes = defineModel({ 
+  type: Array, 
+  default: () => [] 
+});
 
 const props = defineProps({
   recordEnabled: {
