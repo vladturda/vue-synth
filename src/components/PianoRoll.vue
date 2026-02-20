@@ -8,9 +8,15 @@
 
         <button class="roll-btn" @click="clearNotes">Clear</button>
 
+        <div class="note-length-control">
+          <label>Note Length</label>
+          <Slider v-model.number="noteLength" :min="1" :max="8" :step="1" />
+          <span class="note-length-value">{{ noteLength }}/8</span>
+        </div>
+
         <div class="tempo-control">
           <label>Tempo</label>
-          <Slider v-model.number="tempo" :min="60" :max="200" :step="1"/>
+          <Slider v-model.number="tempo" :min="60" :max="200" :step="1" />
           <span class="tempo-value">{{ tempo }} BPM</span>
         </div>
       </div>
@@ -100,6 +106,7 @@ const props = defineProps({
 const emit = defineEmits(['playNote', 'stopNote', 'noteTriggered']);
 
 const tempo = ref(120);
+const noteLength = ref(2);
 const isPlaying = ref(false);
 const isPlayingBack = ref(false);
 const currentTick = ref(0);
@@ -115,17 +122,6 @@ const beatsPerBar = 4;
 const totalBeats = totalBars * beatsPerBar;
 const beatWidth = 60;
 const ticksPerBeat = 8;
-
-const gridWidth = computed(() => {
-  if (gridRef.value) {
-    return gridRef.value.clientWidth;
-  }
-  return totalBeats * beatWidth;
-});
-
-const noteWidth = computed(() => {
-  return gridWidth.value / totalBeats;
-});
 
 let playTimeout = null;
 let noteId = 0;
@@ -146,13 +142,14 @@ function addNote(note, beat) {
         id: noteId++,
         note,
         start: beat,
-        duration: 2/8,
+        duration: noteLength.value/8,
         playing: false
       });
   }
 }
 
 function removeNote(note) {
+  emit('stopNote', note.note);
   const index = notes.value.findIndex(n => n.id === note.id);
   if (index > -1) {
     notes.value.splice(index, 1);
@@ -310,6 +307,27 @@ onUnmounted(() => {
 }
 
 .tempo-control .tempo-value {
+  color: #00d9ff;
+  font-size: 14px;
+  font-weight: bold;
+}
+
+.note-length-control {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: #888;
+  font-size: 12px;
+}
+
+.note-length-control label {
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: #888;
+}
+
+.note-length-control .note-length-value {
   color: #00d9ff;
   font-size: 14px;
   font-weight: bold;
