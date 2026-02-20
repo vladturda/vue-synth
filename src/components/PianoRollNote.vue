@@ -6,7 +6,7 @@
       left: (start / totalBeats * 100) + '%',
       width: (duration / totalBeats * 100) + '%'
     }"
-    @mousedown.stop="removeNote"
+    @mousedown.stop="$emit('removeNote')"
   ></div>
 </template>
 
@@ -30,11 +30,7 @@ defineProps({
   }
 });
 
-const emit = defineEmits(['removeNote']);
-
-function removeNote() {
-  emit('removeNote');
-}
+defineEmits(['removeNote']);
 </script>
 
 <style scoped>

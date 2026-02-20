@@ -34,7 +34,7 @@
         </div>
       </div>
       
-      <div class="roll-grid" ref="gridRef">
+      <div class="roll-grid">
         <div class="grid-content">
           <div class="beat-lines">
             <div 
@@ -110,7 +110,6 @@ const noteLength = ref(2);
 const isPlaying = ref(false);
 const isPlayingBack = ref(false);
 const currentTick = ref(0);
-const gridRef = ref(null);
 
 const displayNotes = [
   'B4', 'A#4', 'A4', 'G#4', 'G4', 'F#4', 'F4', 'E4', 'D#4', 'D4', 'C#4', 'C4',
@@ -120,7 +119,6 @@ const displayNotes = [
 const totalBars = 1;
 const beatsPerBar = 4;
 const totalBeats = totalBars * beatsPerBar;
-const beatWidth = 60;
 const ticksPerBeat = 8;
 
 let playTimeout = null;

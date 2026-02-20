@@ -1,5 +1,5 @@
 <template>
-    <Synth />
+  <Synth />
 </template>
 
 <script setup>
