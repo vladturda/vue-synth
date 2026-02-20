@@ -6,17 +6,18 @@
       @mousedown="startDrag"
     ></div>
   </div>
-  <span class="knob-value">{{ displayValue }}</span>
+  <span class="knob-value" v-if="showValue">{{ displayValue }}</span>
 </template>
 
 <script setup>
-import { computed, ref } from 'vue'
+import { computed, ref } from 'vue';
+
+const model = defineModel({ 
+  type: Number, 
+  required: true 
+});
 
 const props = defineProps({
-  modelValue: {
-    type: Number,
-    required: true
-  },
   min: {
     type: Number,
     default: 0
@@ -29,53 +30,56 @@ const props = defineProps({
     type: Number,
     default: 0.01
   },
+  showValue: {
+    type: Boolean,
+    default: false
+  },
   format: {
     type: String,
     default: ''
   }
-})
+});
 
-const emit = defineEmits(['update:modelValue'])
-
-const isDragging = ref(false)
-const startY = ref(0)
-const startValue = ref(0)
+const isDragging = ref(false);
+const startY = ref(0);
+const startValue = ref(0);
 
 const normalizedValue = computed(() => {
-  return (props.modelValue - props.min) / (props.max - props.min)
+  return (model.value - props.min) / (props.max - props.min);
 })
 
 const rotation = computed(() => {
-  return normalizedValue.value * 270 - 135
+  return normalizedValue.value * 270 - 135;
 })
 
 const displayValue = computed(() => {
   if (props.format === 's') {
-    return props.modelValue.toFixed(2) + 's'
+    return model.value.toFixed(2) + 's';
   }
-  return Math.round(props.modelValue)
+  return Math.round(model.value);
 })
 
 function startDrag(e) {
-  isDragging.value = true
-  startY.value = e.clientY
-  startValue.value = normalizedValue.value
+  isDragging.value = true;
+  startY.value = e.clientY;
+  startValue.value = normalizedValue.value;
   
-  document.addEventListener('mousemove', onDrag)
-  document.addEventListener('mouseup', stopDrag)
+  document.addEventListener('mousemove', onDrag);
+  document.addEventListener('mouseup', stopDrag);
 }
 
 function onDrag(e) {
-  if (!isDragging.value) return
+  if (!isDragging.value) return;
   
-  const delta = (startY.value - e.clientY) / 100
-  let newValue = startValue.value + delta
-  newValue = Math.max(0, Math.min(1, newValue))
+  const delta = (startY.value - e.clientY) / 100;
+  let newValue = startValue.value + delta;
+  newValue = Math.max(0, Math.min(1, newValue));
   
-  const rawValue = props.min + newValue * (props.max - props.min)
-  const steppedValue = Math.round(rawValue / props.step) * props.step
+  const rawValue = props.min + newValue * (props.max - props.min);
+  const steppedValue = Math.round(rawValue / props.step) * props.step;
   
-  emit('update:modelValue', steppedValue)
+  model.value = steppedValue;
+  //emit('update:modelValue', steppedValue);
 }
 
 function stopDrag() {

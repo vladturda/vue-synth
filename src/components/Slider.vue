@@ -6,21 +6,22 @@
       :min="min" 
       :max="max" 
       :step="step"
-      :value="modelValue"
-      @input="$emit('update:modelValue', parseFloat($event.target.value))"
+      :value="model"
+      @input="model = parseFloat($event.target.value)"
     >
-    <span class="slider-value">{{ displayValue }}</span>
+    <span class="slider-value" v-if="showValue">{{ displayValue }}</span>
   </div>
 </template>
 
 <script setup>
-import { computed } from 'vue'
+import { computed } from 'vue';
+
+const model = defineModel({
+  type: Number,
+  required: true
+});
 
 const props = defineProps({
-  modelValue: {
-    type: Number,
-    required: true
-  },
   min: {
     type: Number,
     default: 0
@@ -33,23 +34,25 @@ const props = defineProps({
     type: Number,
     default: 0.01
   },
+  showValue: {
+    type: Boolean,
+    default: false,
+  },
   format: {
     type: String,
     default: ''
   }
-})
-
-defineEmits(['update:modelValue'])
+});
 
 const displayValue = computed(() => {
   if (props.format === 'percent') {
-    return Math.round(props.modelValue * 100) + '%'
+    return Math.round(model.value * 100) + '%';
   }
   if (props.format === 's') {
-    return props.modelValue.toFixed(2) + 's'
+    return model.value.toFixed(2) + 's';
   }
-  return props.modelValue
-})
+  return model.value;
+});
 </script>
 
 <style scoped>

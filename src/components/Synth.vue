@@ -1,5 +1,8 @@
 <template>
   <div class="synth">
+
+    <h1>JS Synth</h1>
+
     <div class="view-toggle">
       <button 
         class="toggle-btn"
@@ -28,27 +31,28 @@
 
       <div class="control-group">
         <label>Volume</label>
-        <Slider v-model="params.volume" :min="0" :max="1" :step="0.01" format="percent" />
+        <Slider v-model="params.volume" :min="0" :max="1" :step="0.01" format="percent" showValue/>
       </div>
 
       <div class="control-group">
         <label>Octave</label>
-        <Slider v-model="params.octave" :min="2" :max="6" :step="1" />
+        <Slider v-model="params.octave" :min="2" :max="6" :step="1" showValue />
+        <span>{{ params.octave }}</span>
       </div>
 
       <div class="control-group">
         <label>Attack</label>
-        <Knob v-model="params.attack" :min="0.01" :max="1" :step="0.01" format="s" />
+        <Knob v-model="params.attack" :min="0.01" :max="1" :step="0.01" format="s" showValue />
       </div>
 
       <div class="control-group">
         <label>Release</label>
-        <Knob v-model="params.release" :min="0.01" :max="2" :step="0.01" format="s" />
+        <Knob v-model="params.release" :min="0.01" :max="2" :step="0.01" format="s" showValue />
       </div>
 
       <div class="control-group">
         <label>Detune</label>
-        <Knob v-model="params.detune" :min="-50" :max="50" :step="1" format="" />
+        <Knob v-model="params.detune" :min="-50" :max="50" :step="1" format="" showValue />
       </div>
 
     </div>
@@ -60,7 +64,7 @@
     />
 
     <PianoRoll 
-      v-if="showPianoRoll"
+      v-show="showPianoRoll"
       v-model="sequencerNotes"
       ref="pianoRollRef"
       @playNote="playNote"
@@ -263,6 +267,7 @@ onUnmounted(() => {
   align-items: center;
   gap: 10px;
   flex: 1 1 calc(33% - 20px);
+  margin: 10px 0;
 }
 
 .control-group label {

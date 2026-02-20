@@ -19,8 +19,8 @@
 
         <div class="tempo-control">
           <label>Tempo</label>
-          <Slider v-model.number="tempo" :min="60" :max="400" :step="1" format="BPM" />
-          <span>BPM</span>
+          <Slider v-model.number="tempo" :min="60" :max="200" :step="1"/>
+          <span class="tempo-value">{{ tempo }} BPM</span>
         </div>
       </div>
     </div>
@@ -60,7 +60,7 @@
           <div 
             v-if="isPlaying" 
             class="playhead"
-            :style="{ left: (currentTick.value / (totalBeats * ticksPerBeat) * 100) + '%' }"
+            :style="{ left: (currentTick / (totalBeats * ticksPerBeat) * 100) + '%' }"
           ></div>
           
           <div class="note-rows">
@@ -72,18 +72,15 @@
               :note="note"
               @click="onRowClick"
             >
-              <div 
-                v-for="n in getNotesForRow(note)" 
-                :key="n.id"
-              >
-                <PianoRollNote 
+                <PianoRollNote
+                  v-for="n in notesPerRow[note]"
+                  :key="n.id"
                   :start="n.start"
                   :duration="n.duration"
                   :playing="n.playing"
                   :total-beats="totalBeats"
                   @remove="removeNote(n)"
                 />
-              </div>
             </div>
           </div>
         </div>
@@ -97,18 +94,16 @@ import { ref, computed, onUnmounted, watch } from 'vue';
 import Slider from './Slider.vue';
 import PianoRollNote from './PianoRollNote.vue';
 
+const notes = defineModel({ type: Array, default: () => [] });
+
 const props = defineProps({
-  modelValue: {
-    type: Array,
-    default: () => []
-  },
   recordEnabled: {
     type: Boolean,
     default: false
   }
 });
 
-const emit = defineEmits(['update:modelValue', 'playNote', 'stopNote', 'noteTriggered']);
+const emit = defineEmits(['playNote', 'stopNote', 'noteTriggered']);
 
 const tempo = ref(120);
 const isPlaying = ref(false);
@@ -127,10 +122,6 @@ const beatsPerBar = 4;
 const totalBeats = totalBars * beatsPerBar;
 const beatWidth = 60;
 const ticksPerBeat = 8;
-
-const noteHeight = computed(() => 100 / displayNotes.length);
-
-const notes = ref([...props.modelValue]);
 
 const gridWidth = computed(() => {
   if (gridRef.value) {
@@ -153,29 +144,25 @@ let recordingStartTime = 0;
 let recordingTickStart = 0;
 const activeRecordingNotes = {};
 
-const getNotesForRow = (noteName) => {
-  return notes.value.filter(n => n.note === noteName);
-}
-
-function getCurrentRecordingTick() {
-  if (!isPlaying.value || !isRecording.value) return 0;
-  const elapsedMs = performance.now() - recordingStartTime;
-  const tickDuration = 60000 / (tempo.value * ticksPerBeat);
-  return recordingTickStart + Math.floor(elapsedMs / tickDuration);
-}
+const notesPerRow = computed(() => {
+  const rows = {};
+  for (let noteName of displayNotes) {
+    rows[noteName] = notes.value.filter(n => n.note === noteName);
+  }
+  return rows;
+});
 
 function addNote(note, beat) {
   const existing = notes.value.find(n => n.note === note && beat >= n.start && beat < n.start + n.duration);
   
   if (!existing) {
-    notes.value.push({
-      id: noteId++,
-      note,
-      start: beat,
-      duration: 2/8,
-      playing: false
-    });
-    emit('update:modelValue', notes.value);
+      notes.value.push({
+        id: noteId++,
+        note,
+        start: beat,
+        duration: 2/8,
+        playing: false
+      });
   }
 }
 
@@ -183,8 +170,24 @@ function removeNote(note) {
   const index = notes.value.findIndex(n => n.id === note.id);
   if (index > -1) {
     notes.value.splice(index, 1);
-    emit('update:modelValue', notes.value);
   }
+}
+
+// Handle click on grid to add notes
+function onRowClick(event) {
+  const rect = event.target.getBoundingClientRect();
+  
+  const x = event.clientX - rect.left;
+  const beat = Math.floor((x / rect.width) * totalBeats * 8) / 8;
+  
+  addNote(event.target.getAttribute('note'), beat);
+}
+
+function getCurrentRecordingTick() {
+  if (!isPlaying.value || !isRecording.value) return 0;
+  const elapsedMs = performance.now() - recordingStartTime;
+  const tickDuration = 60000 / (tempo.value * ticksPerBeat);
+  return recordingTickStart + Math.floor(elapsedMs / tickDuration);
 }
 
 function startNoteRecording(note, fromKeyboard = true) {
@@ -221,7 +224,6 @@ function stopNoteRecording(note, fromKeyboard = true) {
       duration,
       playing: false
     });
-    emit('update:modelValue', [...notes.value]);
   }
   
   delete activeRecordingNotes[note];
@@ -241,7 +243,6 @@ function toggleRecord() {
 
 function clearNotes() {
   notes.value = [];
-  emit('update:modelValue', notes.value);
 }
 
 function togglePlay() {
@@ -289,7 +290,7 @@ function playNextTick() {
 function startPlayback() {
   isPlaying.value = true;
   isPlayingBack.value = true;
-  currentTick.value = 0;
+  currentTick.value = 1;
   playNextTick();
 }
 
@@ -312,23 +313,9 @@ function handleScroll(e) {
   // Handle scroll sync if needed
 }
 
-// Handle click on grid to add notes
-function onRowClick(e) {
-  const rect = e.target.getBoundingClientRect();
-  
-  const x = e.clientX - rect.left;
-  const beat = Math.floor((x / rect.width) * totalBeats * 8) / 8;
-  
-  addNote(e.target.getAttribute('note'), beat);
-}
-
 onUnmounted(() => {
   stopPlayback()
 });
-
-watch(() => props.modelValue, (newVal) => {
-  notes.value = [...newVal]
-}, { deep: true });
 
 watch(() => props.recordEnabled, (newVal) => {
   isRecording.value = newVal
@@ -410,12 +397,9 @@ defineExpose({
   color: #888;
 }
 
-.tempo-control input {
-  width: 80px;
-}
-
-.tempo-control span {
+.tempo-control .tempo-value {
   color: #00d9ff;
+  font-size: 14px;
   font-weight: bold;
 }
 
