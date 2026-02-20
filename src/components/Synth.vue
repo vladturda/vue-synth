@@ -37,7 +37,6 @@
       <div class="control-group">
         <label>Octave</label>
         <Slider v-model="params.octave" :min="2" :max="6" :step="1" showValue />
-        <span>{{ params.octave }}</span>
       </div>
 
       <div class="control-group">
