@@ -59,6 +59,7 @@
 
     <Keyboard 
       :active-notes="activeNotes"
+      :octave="params.octave"
       @playNote="playNote"
       @stopNote="stopNote"
     />
@@ -67,6 +68,7 @@
       v-show="showPianoRoll"
       v-model="sequencerNotes"
       :active-notes="activeNotes"
+      :octave="params.octave"
       @playNote="playNote"
       @stopNote="stopNote"
     />
@@ -74,13 +76,13 @@
 </template>
 
 <script setup>
-import { reactive, ref, onMounted, onUnmounted } from 'vue';
+import { reactive, ref, computed, onMounted, onUnmounted } from 'vue';
 import Knob from './Knob.vue';
 import Slider from './Slider.vue';
 import Keyboard from './Keyboard.vue';
 import PianoRoll from './PianoRoll.vue';
 
-const showPianoRoll = ref(false);
+const showPianoRoll = ref(true);
 
 const waveforms = ['sine', 'square', 'sawtooth', 'triangle'];
 const waveLabels = {
@@ -111,19 +113,30 @@ let audioCtx = null;
 let masterGain = null;
 const activeOscillators = new Map();
 
-const keyMap = {
-  'q': 'C3', '2': 'C#3', 'w': 'D3', '3': 'D#3', 'e': 'E3',
-  'r': 'F3', '5': 'F#3', 't': 'G3', '6': 'G#3', 'y': 'A3',
-  '7': 'A#3', 'u': 'B3',
-  'z': 'C4', 's': 'C#4', 'x': 'D4', 'd': 'D#4', 'c': 'E4',
-  'v': 'F4', 'g': 'F#4', 'b': 'G4', 'h': 'G#4', 'n': 'A4',
-  'j': 'A#4', 'm': 'B4'
-};
+const keyInput = [ 'q', '2', 'w', '3', 'e', 'r', '5', 't', '6', 'y', '7', 'u', 'z', 's', 'x', 'd', 'c', 'v', 'g', 'b', 'h', 'n', 'j', 'm'];
+const keyRoll = [ 'C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'A', 'A#', 'B' ];
+const keyNotes = computed(() => {
+  const twoOctaves = [];
+  for (let currentOctave of [ params.octave-1, params.octave ]) {
+    for (let currentNote of keyRoll) {
+      twoOctaves.push(currentNote + currentOctave);
+    }
+  }
+  return twoOctaves;
+});
 
+const keyMap = computed(() => {
+  const map = {};
+  for (let index in keyInput) {
+    map[keyInput[index]] = keyNotes.value[index];
+  }
+  return map;
+});
+console.log(keyMap);
 function getFrequency(noteWithOctave) {
   const note = noteWithOctave.slice(0, -1);
   const octaveChar = noteWithOctave.slice(-1);
-  const octave = parseInt(octaveChar) + (params.octave - 4);
+  const octave = parseInt(octaveChar);// + (params.octave - 4);
   const baseFreq = noteFrequencies[note];
   return baseFreq * Math.pow(2, octave - 4);
 }
@@ -139,6 +152,7 @@ function initAudio() {
 
 function playNote(note) {
   initAudio();
+  console.log(note);
   
   if (audioCtx.state === 'suspended') {
     audioCtx.resume();
@@ -188,14 +202,14 @@ function stopNote(note) {
 
 function handleKeyDown(e) {
   if (e.repeat) return;
-  const note = keyMap[e.key.toLowerCase()];
+  const note = keyMap.value[e.key.toLowerCase()];
   if (note && !activeOscillators.has(note)) {
     playNote(note);
   }
 }
 
 function handleKeyUp(e) {
-  const note = keyMap[e.key.toLowerCase()];
+  const note = keyMap.value[e.key.toLowerCase()];
   if (note) {
     stopNote(note);
   }

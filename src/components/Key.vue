@@ -35,7 +35,7 @@ defineEmits(['playNote', 'stopNote']);
   position: absolute;
   top: 0px;
   margin: 30px;
-  transition: all 0.1s ease;
+  transition: background 0.1s ease, transform 0.1s ease;
 }
 
 .key.white {

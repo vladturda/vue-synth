@@ -100,6 +100,10 @@ const props = defineProps({
   activeNotes: {
     type: Object,
     default: () => ({})
+  },
+  octave: {
+    type: Number,
+    default: 4
   }
 });
 
@@ -111,10 +115,18 @@ const isPlaying = ref(false);
 const isPlayingBack = ref(false);
 const currentTick = ref(0);
 
-const displayNotes = [
-  'B4', 'A#4', 'A4', 'G#4', 'G4', 'F#4', 'F4', 'E4', 'D#4', 'D4', 'C#4', 'C4',
-  'B3', 'A#3', 'A3', 'G#3', 'G3', 'F#3', 'F3', 'E3', 'D#3', 'D3', 'C#3', 'C3'
-];
+const noteRoll = ['B', 'A#', 'A', 'G#', 'G', 'F#', 'F', 'E', 'D#', 'D', 'C#', 'C'];
+
+const displayNotes = computed(() => {
+  const twoOctaves = [];
+  for (let currentOctave of [ props.octave, props.octave - 1]) {
+    for (let currentNote of noteRoll) {
+      twoOctaves.push(currentNote + currentOctave);
+    }
+  }
+  return twoOctaves;
+});
+
 
 const totalBars = 1;
 const beatsPerBar = 4;
@@ -126,7 +138,7 @@ let noteId = 0;
 
 const notesPerRow = computed(() => {
   const rows = {};
-  for (let noteName of displayNotes) {
+  for (let noteName of displayNotes.value) {
     rows[noteName] = notes.value.filter(n => n.note === noteName);
   }
   return rows;
@@ -258,6 +270,7 @@ onUnmounted(() => {
 
 .piano-roll-controls {
   display: flex;
+  flex-direction: row;
   align-items: center;
   gap: 15px;
   justify-content: space-between;
@@ -335,7 +348,7 @@ onUnmounted(() => {
 
 .piano-roll-container {
   display: flex;
-  background: #0f0f1e;
+  background: #1a1a2e;
   border-radius: 5px;
   overflow: hidden;
   height: 450px;
@@ -345,7 +358,7 @@ onUnmounted(() => {
   width: 50px;
   flex-shrink: 0;
   background: #1a1a2e;
-  border-right: 1px solid #333;
+  border-right: 1px solid #3b3b5e;
   display: flex;
   flex-direction: column;
 }
@@ -396,12 +409,12 @@ onUnmounted(() => {
   top: 0;
   bottom: 0;
   width: 1px;
-  background: #555;
+  background: #3b3b5e;
   z-index: 3;
 }
 
 .beat-line.major {
-  background: #333;
+  background: #3b3b5e;
 }
 
 .tick-line {
@@ -409,7 +422,7 @@ onUnmounted(() => {
   top: 0;
   bottom: 0;
   width: 1px;
-  background: #1a1a2e;
+  background: #202033;
 }
 
 .beat-label {
