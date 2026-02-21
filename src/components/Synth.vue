@@ -107,13 +107,13 @@ const noteFrequencies = {
   'G#': 415.30, 'A': 440.00, 'A#': 466.16, 'B': 493.88
 };
 
-const activeNotes = reactive({});
+const activeNotes = ref({});
 const sequencerNotes = ref([]);
 let audioCtx = null;
 let masterGain = null;
 const activeOscillators = new Map();
 
-const keyRoll = [ 'C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'A', 'A#', 'B' ];
+const keyRoll = [ 'C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B' ];
 const keyNotes = computed(() => {
   const twoOctaves = [];
   for (let currentOctave of [ params.octave-1, params.octave ]) {
@@ -176,7 +176,7 @@ function playNote(note) {
   osc.start();
   
   activeOscillators.set(note, { osc, gainNode });
-  activeNotes[note] = true;
+  activeNotes.value[note] = true;
 }
 
 function stopNote(note) {
@@ -194,7 +194,7 @@ function stopNote(note) {
     }, params.release * 1000 + 100);
     
     activeOscillators.delete(note);
-    delete activeNotes[note];
+    delete activeNotes.value[note];
   }
 }
 
