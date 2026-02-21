@@ -113,7 +113,6 @@ let audioCtx = null;
 let masterGain = null;
 const activeOscillators = new Map();
 
-const keyInput = [ 'q', '2', 'w', '3', 'e', 'r', '5', 't', '6', 'y', '7', 'u', 'z', 's', 'x', 'd', 'c', 'v', 'g', 'b', 'h', 'n', 'j', 'm'];
 const keyRoll = [ 'C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'A', 'A#', 'B' ];
 const keyNotes = computed(() => {
   const twoOctaves = [];
@@ -124,7 +123,7 @@ const keyNotes = computed(() => {
   }
   return twoOctaves;
 });
-
+const keyInput = [ 'q', '2', 'w', '3', 'e', 'r', '5', 't', '6', 'y', '7', 'u', 'z', 's', 'x', 'd', 'c', 'v', 'g', 'b', 'h', 'n', 'j', 'm'];
 const keyMap = computed(() => {
   const map = {};
   for (let index in keyInput) {
@@ -132,7 +131,7 @@ const keyMap = computed(() => {
   }
   return map;
 });
-console.log(keyMap);
+
 function getFrequency(noteWithOctave) {
   const note = noteWithOctave.slice(0, -1);
   const octaveChar = noteWithOctave.slice(-1);
@@ -152,7 +151,6 @@ function initAudio() {
 
 function playNote(note) {
   initAudio();
-  console.log(note);
   
   if (audioCtx.state === 'suspended') {
     audioCtx.resume();
