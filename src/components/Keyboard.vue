@@ -30,7 +30,7 @@ const props = defineProps({
 
 defineEmits(['playNote', 'stopNote']);
 
-const keyRoll = [ 'C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'A', 'A#', 'B'];
+const keyRoll = [ 'C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
 const keyDefinitions = computed(() => {
   const twoOctaves = [];
   for (let currentOctave of [ props.octave-1, props.octave ]) {
